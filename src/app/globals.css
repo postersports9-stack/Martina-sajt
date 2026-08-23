@@ -1,0 +1,228 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+/*
+  Near-monochrome palette, opened up with a navy tint ramp derived from #2B3761.
+  The old #efefee paper band sat 1.15:1 from white -- the alternation was
+  invisible, so the whole page read as one flat sheet. `paper` is now cool and
+  navy-tinted: the hue shift separates the bands where luminance alone could not.
+  Still no gold anywhere in the UI -- the logo keeps its own colours as a brand
+  asset.
+
+  `muted` darkened #6B6B70 -> #5E5E66 to stay AA on the darker band.
+
+  Computed contrast:
+    ink on paper ......... 15.0:1  AAA
+    ink on white ......... 16.6:1  AAA
+    white on navy ........ 11.6:1  AAA  -> the CTA pairing
+    navy on paper ......... 9.8:1  AAA
+    muted on paper ........ 5.3:1  AA, secondary text only
+    muted on white ........ 6.3:1  AA
+    white/70 on navy ...... 5.9:1  AA
+*/
+@theme {
+  --color-ink: #17171f;
+  --color-paper: #e9ebf2;
+  --color-navy: #2b3761;
+  --color-navy-deep: #212a4a;
+  --color-muted: #5e5e66;
+
+  /* Tint ramp: panels, hairlines and borders that used to be flat ink/opacity. */
+  --color-navy-50: #f4f6fa;
+  --color-navy-100: #dfe4ef;
+  --color-navy-200: #c2cadd;
+
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+
+  /* Was a flat 6.5rem at every width -- too tight at 375, too loose at 1440. */
+  --spacing-section: clamp(4.5rem, 8vw, 7.5rem);
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html {
+    /* Sticky header is 64px; keeps anchor targets from hiding underneath. */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Macedonian shares Serbian localised italic Cyrillic forms (б г д п т).
+     Emphasis uses weight and colour instead of italics -- see PLAN.md. */
+  em {
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-navy);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-navy);
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: 75rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Display headline: heavy, uppercase, tight -- the hero and closing statement. */
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  /*
+    Manrope tops out at 800 and `.headline` is already there, so "bolder" cannot
+    come from font-weight -- 900 would only trigger the browser's faux-bold, which
+    smears Cyrillic badly. Two real levers instead:
+
+      1. `-webkit-font-smoothing: auto` -- body sets `antialiased`, which thins
+         strokes. Handing the hero back to subpixel rendering restores the weight
+         the face was drawn with.
+      2. A hairline stroke in the text's own colour, ~1.6% of the em. Enough to
+         read as heavier; small enough that the counters in О, Д, Б stay open.
+  */
+  .headline-heavy {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+    -webkit-text-stroke: 0.016em currentColor;
+    paint-order: stroke fill;
+  }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--color-navy-200);
+    margin: 0;
+  }
+
+  .rule-on-navy {
+    border-top-color: color-mix(in srgb, #ffffff 22%, transparent);
+  }
+
+  /* Oversized ghost numeral behind the Теми list. Editorial, not an icon card --
+     PLAN.md section 5 rules out an icon-card grid for this section. */
+  .ghost-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    color: var(--color-navy);
+    opacity: 0.22;
+  }
+}
+
+/*
+  ── Motion ────────────────────────────────────────────────────────────────────
+  PLAN.md section 3 froze the page at zero motion. That is lifted, but only to
+  the restrained tier: 150-200ms on hover, one fade-up per group on entry. No
+  parallax, no counters, no page transitions.
+
+  The hidden start state is gated behind `.js` on <html>, set by a blocking
+  inline script in layout.tsx. Without JS -- or before hydration -- nothing is
+  ever hidden, so the page degrades to the static version it is today.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 520ms var(--ease-out-soft),
+      transform 520ms var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+/* Photo tile: fixed 3:2 crop so grid rows line up, hairline ring, slow push-in
+   on hover. The transform lives on the <img>, never the tile, so nothing reflows. */
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--color-navy-100);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 9%, transparent);
+}
+
+.photo-frame img {
+  transition: transform 600ms var(--ease-out-soft);
+}
+
+@media (hover: hover) {
+  .photo-frame:hover img {
+    transform: scale(1.045);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-frame img,
+  .photo-frame:hover img {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Sticky header only earns its shadow once the page has actually scrolled. */
+#site-header {
+  transition:
+    box-shadow 200ms var(--ease-out-soft),
+    border-color 200ms var(--ease-out-soft);
+}
+
+html[data-scrolled] #site-header {
+  border-color: var(--color-navy-200);
+  box-shadow: 0 1px 16px -6px color-mix(in srgb, var(--color-navy) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #site-header {
+    transition: none;
+  }
+}
