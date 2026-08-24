@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title,
   description: site.description,
   icons: { icon: "/favicon.svg" },
+  /* Suppresses the browser's "translate this page?" prompt: the page is
+     Macedonian on purpose, and Chrome offers to translate it away on every visit. */
+  other: { google: "notranslate" },
   openGraph: {
     title,
     description: site.description,
@@ -44,7 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   });
 
   return (
-    <html lang="mk">
+    <html lang="mk" translate="no">
       <body id="top">
         {/* Parser-blocking and first in the body, so `.js` lands before the first
             paint. Everything the reveal CSS hides is hidden only under `.js`,
