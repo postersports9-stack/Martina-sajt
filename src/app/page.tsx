@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import type { StaticImageData } from "next/image";
 
-import ContactForm from "@/components/contact-form";
 import CtaButton from "@/components/cta-button";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
@@ -404,10 +403,10 @@ export default function Home() {
 
         {/* ── 07 Заклучна покана ──────────────────────────────────────
             Stays centred -- a closing call to action is the one block on the page
-            that earns it. Touch devices keep the phone CTA. Desktop gets the form
-            instead: `tel:` is a dead link in most desktop browsers, so the form is
-            the one thing a desktop visitor can act on. It composes a mailto: draft
-            -- no backend, and the page itself collects nothing. */}
+            that earns it. Phone number on every breakpoint, rendered as visible
+            text so a desktop visitor can dial it by hand: `tel:` is a dead link in
+            most desktop browsers. No form, no backend -- the page collects
+            nothing. */}
         <section id="kontakt" className="scroll-mt-20 bg-navy py-(--spacing-section)">
           <div className="shell text-center">
             <div data-reveal>
@@ -421,7 +420,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-11 md:hidden" data-reveal style={delay(80)}>
+            <div className="mt-11" data-reveal style={delay(80)}>
               <CtaButton size="lg" onNavy />
               <p className="mt-5 text-sm text-white/70">
                 Или преку{" "}
@@ -433,8 +432,6 @@ export default function Home() {
                 </a>
               </p>
             </div>
-
-            <ContactForm />
           </div>
         </section>
       </main>

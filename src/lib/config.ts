@@ -25,18 +25,14 @@ export const contact = {
 } as const;
 
 /**
- * The one call to action on the page.
- *
- * Phone on touch devices, contact form on desktop: `tel:` is a dead link in most
- * desktop browsers, so above `md` every CTA points at the form in section 07.
+ * The one call to action on the page: the phone number, on every breakpoint.
+ * Desktop shows the number as text rather than a form link, so the visitor can
+ * dial it by hand where `tel:` does nothing.
  */
 export const cta = {
   label: "Јави се",
   href: contact.phoneHref,
   display: contact.phoneDisplay,
-  formLabel: "Контактирајте не",
-  formLabelShort: "Контакт",
-  formHref: "#kontakt",
 } as const;
 
 export const nav = [
